@@ -6,9 +6,12 @@ package object converters {
   import messages._
 
   def toProcessError[T <: Throwable](t: T): Error = t match {
-    case OneForgeError.Generic     ⇒ Error.Generic
     case OneForgeError.System(err) ⇒ Error.System(err)
-    case e: Error                  ⇒ e
+    case OneForgeError.ConfigurationError(message) => Error.Generic(message)
+    case OneForgeError.UpstreamAPIError(message) => Error.UpstreamError(message)
+    case OneForgeError.CurrencyCodeError(message) => Error.BadRequest(message)
+    case OneForgeError.RateNotAvailableError(message) => Error.BadRequest(message)
+    case e: Error                  ⇒ Error.Generic(e.message)
     case e                         ⇒ Error.System(e)
   }
 

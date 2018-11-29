@@ -15,6 +15,13 @@ object Currency {
   final case object SGD extends Currency
   final case object USD extends Currency
 
+  val all: Seq[Currency] = Seq(AUD, CAD, CHF, EUR, GBP, NZD, JPY, SGD, USD)
+
+  val pairs: Seq[Rate.Pair] = for {
+    a ← all
+    b ← all if b != a
+  } yield Rate.Pair(a, b)
+
   implicit val show: Show[Currency] = Show.show {
     case AUD ⇒ "AUD"
     case CAD ⇒ "CAD"
@@ -27,16 +34,17 @@ object Currency {
     case USD ⇒ "USD"
   }
 
-  def fromString(s: String): Currency = s match {
-    case "AUD" | "aud" ⇒ AUD
-    case "CAD" | "cad" ⇒ CAD
-    case "CHF" | "chf" ⇒ CHF
-    case "EUR" | "eur" ⇒ EUR
-    case "GBP" | "gbp" ⇒ GBP
-    case "NZD" | "nzd" ⇒ NZD
-    case "JPY" | "jpy" ⇒ JPY
-    case "SGD" | "sgd" ⇒ SGD
-    case "USD" | "usd" ⇒ USD
+  def fromString(s: String): String Either Currency = s match {
+    case "AUD" | "aud" ⇒ Right(AUD)
+    case "CAD" | "cad" ⇒ Right(CAD)
+    case "CHF" | "chf" ⇒ Right(CHF)
+    case "EUR" | "eur" ⇒ Right(EUR)
+    case "GBP" | "gbp" ⇒ Right(GBP)
+    case "NZD" | "nzd" ⇒ Right(NZD)
+    case "JPY" | "jpy" ⇒ Right(JPY)
+    case "SGD" | "sgd" ⇒ Right(SGD)
+    case "USD" | "usd" ⇒ Right(USD)
+    case unmatched     ⇒ Left(s"Unknown currency code $unmatched")
   }
 
   implicit val encoder: Encoder[Currency] =

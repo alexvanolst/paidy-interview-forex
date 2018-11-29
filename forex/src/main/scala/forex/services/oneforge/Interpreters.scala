@@ -1,28 +1,30 @@
 package forex.services.oneforge
 
-import java.time.OffsetDateTime
-
 import forex.domain._
-import monix.eval.Task
+import forex.services.OneForgeError
 import org.atnos.eff._
-import org.atnos.eff.all._
-import org.atnos.eff.addon.monix.task._
+import org.atnos.eff.addon.cats.effect.IOEffect._
 
 object Interpreters {
-  def dummy[R](
+
+  type ErrorEither[A] = OneForgeError Either A
+  type _errorEither[R] = ErrorEither |= R
+
+  def mock[R]: Algebra[Eff[R, ?]] = new Mock[R]
+
+  def live[R](
       implicit
-      m1: _task[R]
-  ): Algebra[Eff[R, ?]] = new Dummy[R]
+      m1: _io[R],
+      m2: _errorEither[R]
+  ): Algebra[Eff[R, ?]] = new OneForgeService[R]
+
 }
 
-final class Dummy[R] private[oneforge] (
-    implicit
-    m1: _task[R]
-) extends Algebra[Eff[R, ?]] {
+final class Mock[R] private[oneforge] (
+    )
+    extends Algebra[Eff[R, ?]] {
   override def get(
       pair: Rate.Pair
   ): Eff[R, Error Either Rate] =
-    for {
-      result ← fromTask(Task.now(Rate(pair, Price(BigDecimal(100)), Timestamp.now)))
-    } yield Right(result)
+    Eff.pure[R, Error Either Rate](Right(Rate(pair, Price(BigDecimal(100)), Timestamp.now)))
 }

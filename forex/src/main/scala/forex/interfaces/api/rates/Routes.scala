@@ -8,8 +8,8 @@ import org.zalando.grafter.macros._
 
 @readerOf[ApplicationConfig]
 case class Routes(
-    processes: Processes,
-    runners: Runners
+                   processes: RatesProcesses,
+                   runners: Runners
 ) {
   import server.Directives._
   import Directives._

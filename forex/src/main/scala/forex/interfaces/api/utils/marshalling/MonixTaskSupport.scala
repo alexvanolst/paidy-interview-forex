@@ -17,7 +17,6 @@ trait MonixTaskSupport {
       val res = task.runAsync(Scheduler(ec))
       m(res)
     }
-
 }
 
 object MonixTaskSupport extends MonixTaskSupport

@@ -13,7 +13,9 @@ object Rate {
   final case class Pair(
       from: Currency,
       to: Currency
-  )
+  ) {
+    def asString = s"$from$to"
+  }
 
   object Pair {
     implicit val encoder: Encoder[Pair] =
